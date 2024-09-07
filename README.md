@@ -22,13 +22,11 @@ This app showcases user authentication using Firebase. Users can sign up, log in
      dependencies:
        flutter:
          sdk: flutter
-       firebase_core: ^latest_version
-       firebase_auth: ^latest_version
+       firebase_core: ^3.4.0
+       firebase_auth: ^5.2.0
        google_sign_in: ^latest_version
        apple_sign_in: ^latest_version
      ```
-
-   - The `AuthenticationBloc` handles authentication events and states.
 
 3. **Firebase Authentication Methods**:
    - Email/Password: Users can sign up and log in using their email and password.
