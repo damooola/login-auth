@@ -1,15 +1,56 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:login_auth/components/button.dart';
 import 'package:login_auth/components/square_tile.dart';
 import 'package:login_auth/components/text_field.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
-  final userNameController = TextEditingController();
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+//controllers
+  final emailController = TextEditingController();
+
   final passWordController = TextEditingController();
-  void userSignIn() {}
+  final logger = Logger();
+
+  // sign user in
+  void userSignIn() async {
+    // show loading circle
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    //try signing in
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text, password: passWordController.text);
+
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found") {
+        logger.e("no user found for that email");
+      } else if (e.code == "wrong-password") {
+        logger.e("wrong password, try again!");
+      }
+    }
+  }
+
+//register now button
   void registerNow() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,17 +68,17 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 30),
 
-              // welcome
+              // welcome text
               Text(
                 "welcome back, you've been missed!",
                 style: TextStyle(color: Colors.grey.shade500, fontSize: 16),
               ),
               const SizedBox(height: 25),
 
-              //username textfield
+              //email textfield
               MyTextField(
-                controller: userNameController,
-                hintText: "Type your username",
+                controller: emailController,
+                hintText: "Type your email",
                 obscureText: false,
               ),
               const SizedBox(height: 8),
