@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:login_auth/pages/login_page.dart';
 import 'home_page.dart';
+import 'login_or_register_page.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -10,6 +10,7 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<User?>(
+        // checking whether user is signed or not
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           // user is logged in
@@ -19,7 +20,7 @@ class AuthPage extends StatelessWidget {
 
           // user is not logged in
           else {
-            return const LoginPage();
+            return  const LoginOrRegisterPage();
           }
         },
       ),

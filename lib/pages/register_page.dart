@@ -4,44 +4,53 @@ import 'package:login_auth/components/button.dart';
 import 'package:login_auth/components/square_tile.dart';
 import 'package:login_auth/components/text_field.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   final Function()? onPressed;
-  const LoginPage({super.key, required this.onPressed});
+  const RegisterPage({super.key, required this.onPressed});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
 //controllers
   final emailController = TextEditingController();
-
   final passWordController = TextEditingController();
+  final confirmPassWordController = TextEditingController();
 
   // sign user in
-  void userSignIn() async {
+  void userSignUp() async {
     // show loading circle
     showDialog(
       context: context,
       builder: (context) {
         return const Center(
-          // show loading circle
           child: CircularProgressIndicator(),
         );
       },
     );
-    //try signing in
+
+    // check if password is confirmed
+    if (passWordController.text != confirmPassWordController.text) {
+      // close loading circle
+      Navigator.pop(context);
+      // show error message password don't match
+      showErrorMessage("Passwords don't match");
+      return;
+    }
+
+    // try creating new user with sign up
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text,
         password: passWordController.text,
       );
-      // close loading circle if user signed in
-      if (mounted) Navigator.of(context).pop();
+      // close loading circle if user signed up successfully
+      if (mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       // Close loading dialog before showing error
-      if (mounted) Navigator.of(context).pop();
-      // Handle  Firebase exceptions
+      if (mounted) Navigator.pop(context);
+      // Handle Firebase exceptions
       showErrorMessage("An error occurred: ${e.message}");
     }
   }
@@ -65,9 +74,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-//register now button
-  void registerNow() {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,20 +85,20 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 // logo
                 const Icon(
                   Icons.lock,
                   size: 100,
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
-                // welcome text
+                // create account text
                 Text(
-                  "welcome back, you've been missed!",
+                  "Let's create an account for you!",
                   style: TextStyle(color: Colors.grey.shade500, fontSize: 16),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 20),
 
                 //email textfield
                 MyTextField(
@@ -100,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: "Type email",
                   obscureText: false,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
 
                 //password textfield
                 MyTextField(
@@ -108,27 +114,21 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: "Type password",
                   obscureText: true,
                 ),
-                //forgot password
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    //wrap widgets in a row and set MainAxisAlignment to end to push to the right
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey.shade500),
-                        // textAlign: TextAlign.end,
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 8),
+
+                //confirm password textfield
+                MyTextField(
+                  controller: confirmPassWordController,
+                  hintText: "Confirm password",
+                  obscureText: true,
                 ),
+
                 const SizedBox(height: 25),
 
                 // sign in button
                 MyButton(
-                  text: "Sign In",
-                  onTap: userSignIn,
+                  text: "Sign Up",
+                  onTap: userSignUp,
                 ),
 
                 const SizedBox(height: 20),
@@ -172,24 +172,24 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Not a member?",
+                      "Alreay have an account?",
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                     const SizedBox(width: 1),
                     TextButton(
                         onPressed: widget.onPressed,
                         child: const Text(
-                          'Register now',
+                          'Login now',
                           style: TextStyle(
                               color: Colors.blue, fontWeight: FontWeight.bold),
                         ))
                   ],
-                )
+                ),
+                const SizedBox(height: 10)
               ],
             ),
           ),
