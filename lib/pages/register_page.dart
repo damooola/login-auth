@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:login_auth/components/button.dart';
 import 'package:login_auth/components/square_tile.dart';
 import 'package:login_auth/components/text_field.dart';
@@ -19,7 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final confirmPassWordController = TextEditingController();
 
   // sign user in
-  void userSignUp() async {
+  void userSignUpWithEmailAndPw() async {
     // show loading circle
     showDialog(
       context: context,
@@ -72,6 +73,22 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       },
     );
+  }
+
+  // google sign up
+  signUpWithGoogle() async {
+    // initialise google user
+    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+    
+    //get auth details from
+    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+
+    // create new credential
+    final credential = GoogleAuthProvider.credential(
+        accessToken: gAuth.accessToken, idToken: gAuth.idToken);
+
+    //sign in
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   @override
@@ -128,7 +145,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 // sign in button
                 MyButton(
                   text: "Sign Up",
-                  onTap: userSignUp,
+                  onTap: userSignUpWithEmailAndPw,
                 ),
 
                 const SizedBox(height: 20),
@@ -161,12 +178,15 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 25),
 
                 // google and apple sign buttons
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SquareTile(imageAsset: 'lib/images/google.png'),
-                    SizedBox(width: 10),
                     SquareTile(
+                        onTap: signUpWithGoogle,
+                        imageAsset: 'lib/images/google.png'),
+                    const SizedBox(width: 10),
+                    SquareTile(
+                      onTap: () {},
                       imageAsset: 'lib/images/apple.png',
                     )
                   ],
@@ -176,7 +196,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Alreay have an account?",
+                      "Already have an account?",
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                     const SizedBox(width: 1),

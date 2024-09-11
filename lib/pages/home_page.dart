@@ -21,9 +21,20 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Text(
-          "LOGGED IN AS ${user.email}!",
-          style: const TextStyle(fontSize: 20),
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  color: Colors.black,
+                  image: DecorationImage(
+                      image: NetworkImage(user.photoURL ??
+                          "https://th.bing.com/th/id/R.e6e5ba63e95200efa5a20649428b258c?rik=QHK4sP9rFm30EQ&pid=ImgRaw&r=0"))),
+            ),
+            Text(
+              "LOGGED IN AS ${user.email}!",
+              style: const TextStyle(fontSize: 20),
+            ),
+          ],
         ),
       ),
     );

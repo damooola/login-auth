@@ -17,9 +17,11 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
 
   final passWordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleAuthProvider _googleAuthProvider = GoogleAuthProvider();
 
   // sign user in
-  void userSignIn() async {
+  void userSignInWithEmailAndPassword() async {
     // show loading circle
     showDialog(
       context: context,
@@ -65,8 +67,13 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-//register now button
-  void registerNow() {}
+  void googleSignIn() async {
+    try {
+      await _auth.signInWithProvider(_googleAuthProvider);
+    } on FirebaseAuthException catch (e) {
+      showErrorMessage("${e.message}");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                 // sign in button
                 MyButton(
                   text: "Sign In",
-                  onTap: userSignIn,
+                  onTap: userSignInWithEmailAndPassword,
                 ),
 
                 const SizedBox(height: 20),
@@ -161,12 +168,15 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 25),
 
                 // google and apple sign buttons
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SquareTile(imageAsset: 'lib/images/google.png'),
-                    SizedBox(width: 10),
                     SquareTile(
+                        onTap: googleSignIn,
+                        imageAsset: 'lib/images/google.png'),
+                    const SizedBox(width: 10),
+                    SquareTile(
+                      onTap: () {},
                       imageAsset: 'lib/images/apple.png',
                     )
                   ],
